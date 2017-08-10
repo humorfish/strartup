@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			*{margin: 0;padding: 0;}
+			.anmt-block{position: absolute; overflow: hidden;left: 0;top: 0; width: 100%;height: 100%;}
+			body{overflow-x: hidden; cursor: pointer;}
+			[h]{display: none;}
+			#f{border: 1px solid red;}
+			canvas{position: absolute;top: 0;left: 0; width: 100%;height:100%;}
+			#btn-text {position: absolute;bottom: 0;width: 200px; height:100px;left:50%;margin-left: -100px;  text-align:center;font-size: 12px;font-family: "微软雅黑";background: url(img/btn.png) no-repeat;padding-top:110px;background-position: top center;}
+			.play{-webkit-animation: name 10s;-moz-animation: name 10s;-ms-animation: name 10s;-o-animation: name 10s;animation-fill-mode: forwards;-webkit-animation-timing-function:ease;-moz-animation-timing-function:ease;-ms-animation-timing-function:ease;-o-animation-timing-function:ease;}
+			@-webkit-keyframes name{
+				0%{width: 100%;}
+				19%{width: 100%;height: 100%; left: 0;top: 0;}
+				100%{width:400%;height: 400%; left: 50px;top:-1500px;}
+			}
+			@-moz-keyframes name{
+				0%{width: 100%;}
+				10%{width: 100%;height: 100%; left: 0;top: 0;}
+				100%{width:400%;height: 400%; left: 50px;top:-1000px;}
+			}
+			@-ms-keyframes name{
+				0%{width: 100%;}
+				10%{width: 100%;height: 100%; left: 0;top: 0;}
+				100%{width:400%;height: 400%; left: 50px;top:-1500px;}
+			}
+			@-o-keyframes name{
+				0%{width: 100%;}
+				10%{width: 100%;height: 100%; left: 0;top: 0;}
+				100%{width:400%;height: 400%; left: 50px;top:-1500px;}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="anmt-block">
+			<canvas id="shape_d" width="1920" height="1080" ></canvas>
+			<canvas id="shape_l" width="1920" height="1080"></canvas>
+			<canvas id="shape_p" width="1920" height="1080" ></canvas>
+			
+			<canvas id="resource_d" width="3072" height="4528" h></canvas>
+			<canvas id="resource_p" width="1056" height="5000" h></canvas>
+			<canvas id="resource_l" width="1056" height="1584" h></canvas>
+			
+			<img src="img/person.png" id="sp" h/>
+			<img src="img/leaf.png" id="sl" h/>
+			<img src="img/door.png" id="sd" h/>
+			<img src="img/persion.png" id="fp" h/>
+			<img src="img/fl.png" id="fl" h/>
+			<img src="img/background.png" id="fd" h/>
+			<div id="btn-play">点“鸡”一下进入</div>
+		</div>
+		<h1>网页正文网页正文网页正文网页正文网页正文</h1>
+	</body>
+	<script src="js/conf.js" type="text/javascript" charset="utf-8"></script>
+	<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+	<script type="text/javascript">
+		var gs,gl,shape_l,shape_p
+		var $anmtBlock=$('#shape_p')
+		var allowPlay=false
+		var stop=false
+		window.onload=function(){
+			var person=new Anmt('resource_p','shape_p','sp','fp','conf_person',false)
+			var leaf=new Anmt('resource_l','shape_l','sl','fl','conf_leaf',true)
+			var door=new Anmt('resource_d','shape_d','sd','fd','conf_door',true)
+			var timer=setInterval(function(){
+				if(allowPlay){
+					door.draw()
+				}
+				person.draw()
+				leaf.draw()
+				if(stop){
+					clearInterval(timer)
+				}
+			},1000/16)
+		}
+		$('body').click(function(){
+			allowPlay=true
+			$anmtBlock.addClass('play')
+			$('#btn-text').fadeOut(1000)
+			setTimeout(function(){
+				$('.anmt-block').fadeOut()
+			},2500)
+		})
+		
+		function Anmt(resource_p,shape_p,sp,fp,conf,clear){
+			var gs=document.getElementById(resource_p).getContext('2d')
+			var shape_p=document.getElementById(shape_p).getContext('2d')
+			gs.drawImage(document.getElementById(sp),0,0)
+			shape_p.drawImage(document.getElementById(fp),0,0)
+			var currentFrame=0
+			var c
+			this.draw=function(){
+				c=window[conf][currentFrame]
+				for(var i=0;i<c.length;i+=4){
+					shape_p.putImageData(gs.getImageData(c[i+2],c[i+3],16,16),c[i],c[i+1])
+				}
+				currentFrame++
+				if(currentFrame>=window[conf].length){
+					if(clear){
+						shape_p.clearRect(0,0,1920,1080)
+					}
+					currentFrame=0
+				}
+			}
+		}
+	</script>
+</html>
